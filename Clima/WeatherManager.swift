@@ -16,21 +16,29 @@ protocol WeatherManagerDelegate {
 }
 
 struct WeatherManager {
-    var weatherUrl = "https://api.openweathermap.org/data/2.5/weather?units=imperial&appid=1337bc8d4b9f658d6cc4c25b29cd4593"
 
-    
     var delegate: WeatherManagerDelegate?
     
     func fetchWeather(cityName: String) {
-        let cityWithoutSpaces = cityName.replacingOccurrences(of: " ", with: "+")
-        let urlString = "\(weatherUrl)&q=\(cityWithoutSpaces)"
-        print(urlString)
-        performRequest(with: urlString)
+        if let weatherAPIKey = ProcessInfo.processInfo.environment["WEATHER_API"] {
+            let weatherUrl = "https://api.openweathermap.org/data/2.5/weather?units=imperial&appid=\(String(describing: weatherAPIKey))"
+            let cityWithoutSpaces = cityName.replacingOccurrences(of: " ", with: "+")
+            let urlString = "\(weatherUrl)&q=\(cityWithoutSpaces)"
+            print(urlString)
+            performRequest(with: urlString)
+        } else {
+            print("Fatal Error, could not find API key")
+        }
     }
     
     func fetchWeather(latitude: CLLocationDegrees, longitude: CLLocationDegrees) {
-        let urlString = "\(weatherUrl)&lat=\(latitude)&lon=\(longitude)"
-        performRequest(with: urlString)
+        if let weatherAPIKey = ProcessInfo.processInfo.environment["WEATHER_API"] {
+            let weatherUrl = "https://api.openweathermap.org/data/2.5/weather?units=imperial&appid=\(String(describing: weatherAPIKey))"
+            let urlString = "\(weatherUrl)&lat=\(latitude)&lon=\(longitude)"
+            performRequest(with: urlString)
+        } else {
+            print("Fatal error, could not find API key")
+        }
     }
     
     func performRequest(with urlString: String) {

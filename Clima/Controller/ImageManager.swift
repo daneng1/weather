@@ -15,15 +15,18 @@ protocol ImageManagerDelegate {
 }
 
 struct ImageManager {
+    
     let unslpashURL = "https://api.unsplash.com/"
     
     var delegate: ImageManagerDelegate?
     
     func fetchImage(cityName: String) {
-        let cityWithoutSpaces = cityName.replacingOccurrences(of: " ", with: "+")
-        
-        let urlString = "\(unslpashURL)search/photos?per_page=1&query=\(cityWithoutSpaces)+skyline&client_id=zFDlTRQqjJs1GfiHkIGGeGJYpE9QAW3J3H-z7uV50xk"
-        performRequest(with: urlString)
+        if let unsplashAPI = ProcessInfo.processInfo.environment["UNSPLASH_API"] {
+            let cityWithoutSpaces = cityName.replacingOccurrences(of: " ", with: "+")
+            
+            let urlString = "\(unslpashURL)search/photos?per_page=1&query=\(cityWithoutSpaces)+skyline&client_id=\(String(describing: unsplashAPI))"
+            performRequest(with: urlString)
+        }
     }
     
     func performRequest(with urlString: String) {
